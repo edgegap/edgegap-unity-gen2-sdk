@@ -56,7 +56,7 @@ Follow our [Getting Started guide](/404) first, then explore our [Matchmaking Sc
 2. Open the `Samples` tab.
 3. Click on **Import** next to **Gen2 Simple Example**.
 4. Locate sample files in your project `Assets/Samples/Edgegap Gen2 SDK/{version}/Simple Example`.
-5. Drag and drop `Gen2ClientHandler` prefab in your scene.
+5. Create an Empty GameObject in your scene and attach `Gen2ClientHandler.cs` script.
 6. Configure Gen2 `BaseUrl` and `AuthToken` values from dashboard.
 
 ### Usage Requirements
