@@ -1,0 +1,20 @@
+{
+    "name": "Edgegap.Gen2.SDK, Version=1.0.0, Culture=neutral",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.nuget.newtonsoft-json",
+            "expression": "",
+            "define": "NEWTONSOFT_JSON"
+        }
+    ],
+    "noEngineReferences": false
+}

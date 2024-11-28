@@ -1,0 +1,27 @@
+{
+    "name": "com.edgegap.unity-gen2-sdk",
+    "version": "1.0.0",
+    "displayName": "Edgegap Gen2 SDK",
+    "description": "Get started quickly with Edgegap Gen2 Matchmaking.",
+    "unity": "2021.3",
+    "unityRelease": "0f1",
+    "documentationUrl": "https://docs.edgegap.com/docs/gen2-matchmaker",
+    "hideInEditor": false,
+    "changelogUrl": "https://github.com/edgegap/edgegap-unity-gen2-sdk/releases",
+    "licensesUrl": "https://choosealicense.com/licenses/mit/",
+    "samples": [
+        {
+            "displayName": "Simple Example",
+            "description": "Minimal Recommended Gen2 Example.",
+            "path": "Samples~/SimpleExample"
+        }
+    ],
+    "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+    },
+    "author": {
+        "name": "Edgegap Technologies",
+        "email": "contact@edgegap.com",
+        "url": "https://www.edgegap.com"
+    }
+}

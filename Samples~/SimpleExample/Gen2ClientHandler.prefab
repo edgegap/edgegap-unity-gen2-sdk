@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8097824274866268494
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7055804467711902122}
+  - component: {fileID: 5479759583199735448}
+  m_Layer: 0
+  m_Name: Gen2ClientHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7055804467711902122
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8097824274866268494}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.537281, y: 4.0804243, z: -1.319046}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5479759583199735448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8097824274866268494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11483e036884f6a4b81c3a191fff98e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BaseUrl: 
+  AuthToken: 
+  ClientVersion: 1.0.0
+  SaveStateInPlayerPrefs: 1
+  PLAYER_PREFS_KEY_VERSION: EdgegapGen2ClientVersion
+  PLAYER_PREFS_KEY_TICKET: EdgegapGen2ClientTicket
+  PLAYER_PREFS_KEY_ASSIGNMENT: EdgegapGen2ClientAssignment
+  RequestTimeoutSeconds: 5
+  PollingBackoffSeconds: 1
+  MaxConsecutivePollingErrors: 10
+  RemoveAssignmentSeconds: 30
+  DeleteTicketOnPause: 0
+  DeleteTicketOnQuit: 1
+  LogTicketUpdates: 1
+  LogAssignmentUpdates: 1
+  LogPollingUpdates: 0
