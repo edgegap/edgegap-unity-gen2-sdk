@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using Ping = UnityEngine.Ping;
 using Random = UnityEngine.Random;
 
 namespace Edgegap.Gen2SDK
@@ -33,8 +35,6 @@ namespace Edgegap.Gen2SDK
         public int MaxConsecutivePollingErrors;
 
         public float RemoveAssignmentSeconds;
-        public bool DeleteTicketOnPause;
-        public bool DeleteTicketOnQuit;
 
         public bool LogTicketUpdates;
         public bool LogAssignmentUpdates;
@@ -60,8 +60,6 @@ namespace Edgegap.Gen2SDK
             float pollingBackoffSeconds = 1f,
             int maxConsecutivePollingErrors = 10,
             float removeAssignmentSeconds = 30f,
-            bool deleteTicketOnPause = false,
-            bool deleteTicketOnQuit = true,
             bool logTicketUpdates = true,
             bool logAssignmentUpdates = true,
             bool logPollingUpdates = false
@@ -80,11 +78,10 @@ namespace Edgegap.Gen2SDK
             PLAYER_PREFS_KEY_VERSION = pLAYER_PREFS_KEY_VERSION;
             PLAYER_PREFS_KEY_TICKET = pLAYER_PREFS_KEY_TICKET;
             PLAYER_PREFS_KEY_ASSIGNMENT = pLAYER_PREFS_KEY_ASSIGNMENT;
+            RequestTimeoutSeconds = requestTimeoutSeconds;
             PollingBackoffSeconds = pollingBackoffSeconds;
             MaxConsecutivePollingErrors = maxConsecutivePollingErrors;
             RemoveAssignmentSeconds = removeAssignmentSeconds;
-            DeleteTicketOnPause = deleteTicketOnPause;
-            DeleteTicketOnQuit = deleteTicketOnQuit;
             LogTicketUpdates = logTicketUpdates;
             LogAssignmentUpdates = logAssignmentUpdates;
             LogPollingUpdates = logPollingUpdates;
@@ -92,7 +89,7 @@ namespace Edgegap.Gen2SDK
 
         #region Client API
 
-        public void Status(Action onSuccessDelegate = null, Action onErrorDelegate = null)
+        public void Status()
         {
             Gen2Api.GetMonitor(
                 (MonitorResponseDTO monitor, UnityWebRequest request) =>
@@ -115,8 +112,8 @@ namespace Edgegap.Gen2SDK
         }
 
         public void Beacons(
-            Action<BeaconsResponseDTO> onSuccessDelegate = null,
-            Action<string, UnityWebRequest> onErrorDelegate = null
+            Action<BeaconsResponseDTO> onSuccessDelegate,
+            Action<string, UnityWebRequest> onErrorDelegate
         )
         {
             Gen2Api.GetBeacons(
@@ -130,6 +127,15 @@ namespace Edgegap.Gen2SDK
                     onErrorDelegate(error, request);
                 }
             );
+        }
+
+        public void MeasureBeaconsRoundTripTime(
+            BeaconDTO[] beacons,
+            Action<Dictionary<string, float>> onCompleteDelegate,
+            int requests = 3
+        )
+        {
+            Handler.StartCoroutine(_GetLatencies(beacons, onCompleteDelegate, requests));
         }
 
         public void ResumeMatchmaking()
@@ -182,8 +188,8 @@ namespace Edgegap.Gen2SDK
 
         public void StartGroupMatchmaking(
             T hostTicket,
-            T[] memberTickets,
-            Action<TicketResponseDTO[], UnityWebRequest> onSuccessDelegate,
+            List<T> memberTickets,
+            Action<List<TicketResponseDTO>, UnityWebRequest> onSuccessDelegate,
             bool abandon = false
         )
         {
@@ -205,7 +211,7 @@ namespace Edgegap.Gen2SDK
                     {
                         Ticket._Update(groupTicket.Tickets.Last(), "saved");
                         Assignment._Update(assignment.Tickets.Last(), "received");
-                        onSuccessDelegate(assignment.Tickets.SkipLast(1).ToArray(), request);
+                        onSuccessDelegate(assignment.Tickets.SkipLast(1).ToList(), request);
                         Handler.StartCoroutine(_ScheduleGetAssignmentRecursively());
                     },
                     (string error, UnityWebRequest request) =>
@@ -563,6 +569,62 @@ namespace Edgegap.Gen2SDK
             Ticket._Update(null, "expired");
             yield return new WaitForSeconds(RemoveAssignmentSeconds);
             Assignment._Update(null, "removed");
+        }
+
+        internal IEnumerator _GetLatencies(
+            BeaconDTO[] beacons,
+            Action<Dictionary<string, float>> onCompleteDelegate,
+            int requests
+        )
+        {
+            Dictionary<string, float> results = new Dictionary<string, float>();
+            foreach (BeaconDTO beacon in beacons)
+            {
+                Handler.StartCoroutine(
+                    _GetAverageRoundTripTime(
+                        beacon.PublicIP,
+                        (double ping) => results.Add(beacon.Location.City, (float)ping),
+                        requests
+                    )
+                );
+            }
+
+            yield return new WaitUntil(() => results.Keys.Count == beacons.Count());
+            onCompleteDelegate(results);
+        }
+
+        internal IEnumerator _GetAverageRoundTripTime(
+            string ip,
+            Action<double> onCompleteDelegate,
+            int requests
+        )
+        {
+            List<int> pings = new List<int>();
+            for (int i = 0; i < requests; i++)
+            {
+                Handler.StartCoroutine(_IcmpPing(ip, (int rtt) => pings.Add(rtt)));
+            }
+
+            yield return new WaitUntil(() => pings.Count == requests);
+
+            List<int> finishedPings = pings.Where((int p) => p > 0).ToList();
+            onCompleteDelegate(
+                finishedPings.Count() > 0 ? Math.Round(finishedPings.Average(), 2) : 0f
+            );
+        }
+
+        internal IEnumerator _IcmpPing(string ip, Action<int> onCompleteDelegate)
+        {
+            Ping ping = new Ping(ip);
+            double start = Time.realtimeSinceStartupAsDouble;
+
+            yield return new WaitUntil(
+                () =>
+                    ping.isDone || Time.realtimeSinceStartupAsDouble - start > RequestTimeoutSeconds
+            );
+
+            onCompleteDelegate(ping.time);
+            ping.DestroyPing();
         }
         #endregion
     }
