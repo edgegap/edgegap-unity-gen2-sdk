@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Net.Sockets;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
+using Ping = UnityEngine.Ping;
 using Random = UnityEngine.Random;
 
 namespace Edgegap.Gen2SDK
@@ -22,6 +24,8 @@ namespace Edgegap.Gen2SDK
         internal string PATH_BEACONS = "locations/beacons";
         internal string PATH_TICKETS = "tickets";
         internal string PATH_GROUP_TICKETS = "group-tickets";
+
+        internal UdpClient UdpClient = new UdpClient();
 
         public Api(
             MonoBehaviour parent,

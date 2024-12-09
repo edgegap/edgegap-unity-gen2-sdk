@@ -7,9 +7,9 @@ using MyTicketsRequestDTO = Edgegap.Gen2SDK.SimpleTicketsRequestDTO;
 
 // todo replace SimpleTicketsRequestDTO with CustomTicketsRequestDTO
 // todo replace LatenciesAttributesDTO with CustomTicketsAttributes
-public class Gen2ClientHandler : MonoBehaviour
+public class Gen2ClientHandlerExample : MonoBehaviour
 {
-    public static Gen2ClientHandler Instance { get; private set; }
+    public static Gen2ClientHandlerExample Instance { get; private set; }
 
     #region Gen2Client Configuration
     public string BaseUrl;
@@ -69,8 +69,6 @@ public class Gen2ClientHandler : MonoBehaviour
             PollingBackoffSeconds,
             MaxConsecutivePollingErrors,
             RemoveAssignmentSeconds,
-            DeleteTicketOnPause,
-            DeleteTicketOnQuit,
             LogTicketUpdates,
             LogAssignmentUpdates,
             LogPollingUpdates
@@ -112,14 +110,18 @@ public class Gen2ClientHandler : MonoBehaviour
                     Gen2Client.Beacons(
                         (BeaconsResponseDTO beacons) =>
                         {
-                            // todo implement platform-specific round-trip time measurement needed for tickets
                             Debug.Log($"beacons: {beacons}");
 
-                            Gen2Client.StartMatchmaking(
-                                new MyTicketsRequestDTO(
-                                    new Dictionary<string, float> { { "Montreal", 42.0f } }
-                                )
+                            Gen2Client.MeasureBeaconsRoundTripTime(
+                                beacons.Beacons,
+                                (Dictionary<string, float> pings) =>
+                                    Gen2Client.StartMatchmaking(new MyTicketsRequestDTO(pings))
                             );
+                        },
+                        (string error, UnityWebRequest request) =>
+                        {
+                            // todo handle beacon downtime, create tickets without beacons?
+                            Debug.Log($"beacon error: {request}");
                         }
                     );
                 }
@@ -134,7 +136,8 @@ public class Gen2ClientHandler : MonoBehaviour
                 {
                     // todo update UI
                 }
-                else if (
+
+                if (
                     (
                         action == ObservableActionType.Update
                         && message.Contains("updated")
@@ -177,14 +180,14 @@ public class Gen2ClientHandler : MonoBehaviour
     // group members need to share tickets to group host to start matchmaking
     public void StartGroupMatchmaking(
         MyTicketsRequestDTO hostTicket,
-        MyTicketsRequestDTO[] memberTickets,
+        List<MyTicketsRequestDTO> memberTickets,
         bool abandon = false
     )
     {
         Gen2Client.StartGroupMatchmaking(
             hostTicket,
             memberTickets,
-            (TicketResponseDTO[] memberAssignments, UnityWebRequest request) =>
+            (List<TicketResponseDTO> memberAssignments, UnityWebRequest request) =>
             {
                 // todo send assignment IDs to group members to track their tickets
                 Debug.Log($"member assignemnts: {memberAssignments}");
