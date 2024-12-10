@@ -63,6 +63,13 @@ Follow our [Getting Started guide](/404) first, then explore our [Matchmaking Sc
 
 To take full advantage of our Unity Gen2 service, you will need to [Create an Edgegap Free Tier account](https://app.edgegap.com/auth/register). Our Free Tier let's you test and explore all of Gen2 features for free, no credit card required!
 
+### Troubleshooting
+
+> Visual Studio shows `type or namespace name could not be found` for Edgegap namespace.
+1. In your Unity Editor, navigate to **Edit / Preferences / External Tools / Generate .csproj files**.
+2. Make sure you have enabled **Git packages**.
+3. Click **Regenerate project files**.
+
 ## Update the Plugin in Unity
 
 Before updating, take note of your `Client Version` property on `Gen2Client.cs` to ensure future compatibility.
