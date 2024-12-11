@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Edgegap.Gen2SDK
 {
-    public class TicketResponseDTO
+    public class TicketsResponseDTO
     {
         [JsonProperty("id")]
         public string ID;

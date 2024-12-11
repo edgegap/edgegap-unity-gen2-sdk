@@ -22,6 +22,7 @@ namespace Edgegap.Gen2SDK
         internal string PATH_BEACONS = "locations/beacons";
         internal string PATH_TICKETS = "tickets";
         internal string PATH_GROUP_TICKETS = "group-tickets";
+        internal string PATH_BACKFILLS = "backfills";
 
         public Api(
             MonoBehaviour parent,
@@ -108,7 +109,7 @@ namespace Edgegap.Gen2SDK
 
         public void CreateTicketAsync(
             T ticket,
-            Action<TicketResponseDTO, UnityWebRequest> onSuccessDelegate,
+            Action<TicketsResponseDTO, UnityWebRequest> onSuccessDelegate,
             Action<string, UnityWebRequest> onErrorDelegate
         )
         {
@@ -119,8 +120,8 @@ namespace Edgegap.Gen2SDK
                 {
                     try
                     {
-                        TicketResponseDTO assignment =
-                            JsonConvert.DeserializeObject<TicketResponseDTO>(response);
+                        TicketsResponseDTO assignment =
+                            JsonConvert.DeserializeObject<TicketsResponseDTO>(response);
                         onSuccessDelegate(assignment, request);
                     }
                     catch (Exception e)
@@ -166,7 +167,7 @@ namespace Edgegap.Gen2SDK
 
         public void GetTicketAsync(
             string ticketID,
-            Action<TicketResponseDTO, UnityWebRequest> onSuccessDelegate,
+            Action<TicketsResponseDTO, UnityWebRequest> onSuccessDelegate,
             Action<string, UnityWebRequest> onErrorDelegate
         )
         {
@@ -176,8 +177,8 @@ namespace Edgegap.Gen2SDK
                 {
                     try
                     {
-                        TicketResponseDTO assignment =
-                            JsonConvert.DeserializeObject<TicketResponseDTO>(response);
+                        TicketsResponseDTO assignment =
+                            JsonConvert.DeserializeObject<TicketsResponseDTO>(response);
                         onSuccessDelegate(assignment, request);
                     }
                     catch (Exception e)
@@ -200,6 +201,79 @@ namespace Edgegap.Gen2SDK
         {
             Delete(
                 $"{BaseUrl}/{PATH_TICKETS}/{ticketID}",
+                (string response, UnityWebRequest request) =>
+                {
+                    onSuccessDelegate(request);
+                },
+                onErrorDelegate
+            );
+        }
+
+        public void CreateBackfillAsync(
+            BackfillsRequestDTO<A> backfill,
+            Action<BackfillsResponseDTO, UnityWebRequest> onSuccessDelegate,
+            Action<string, UnityWebRequest> onErrorDelegate
+        )
+        {
+            Post(
+                $"{BaseUrl}/{PATH_BACKFILLS}",
+                JsonConvert.SerializeObject(backfill),
+                (string response, UnityWebRequest request) =>
+                {
+                    try
+                    {
+                        BackfillsResponseDTO assignment =
+                            JsonConvert.DeserializeObject<BackfillsResponseDTO>(response);
+                        onSuccessDelegate(assignment, request);
+                    }
+                    catch (Exception e)
+                    {
+                        L._Error(
+                            $"Couldn't parse backfill assignment, consider updating Gen2 SDK. {e.Message}"
+                        );
+                        throw;
+                    }
+                },
+                onErrorDelegate
+            );
+        }
+
+        public void GetBackfillAsync(
+            string backfillID,
+            Action<BackfillsResponseDTO, UnityWebRequest> onSuccessDelegate,
+            Action<string, UnityWebRequest> onErrorDelegate
+        )
+        {
+            Get(
+                $"{BaseUrl}/{PATH_BACKFILLS}/{backfillID}",
+                (string response, UnityWebRequest request) =>
+                {
+                    try
+                    {
+                        BackfillsResponseDTO assignment =
+                            JsonConvert.DeserializeObject<BackfillsResponseDTO>(response);
+                        onSuccessDelegate(assignment, request);
+                    }
+                    catch (Exception e)
+                    {
+                        L._Error(
+                            $"Couldn't parse backfill assignment, consider updating Gen2 SDK. {e.Message}"
+                        );
+                        throw;
+                    }
+                },
+                onErrorDelegate
+            );
+        }
+
+        public void DeleteBackfillAsync(
+            string backfillID,
+            Action<UnityWebRequest> onSuccessDelegate,
+            Action<string, UnityWebRequest> onErrorDelegate
+        )
+        {
+            Delete(
+                $"{BaseUrl}/{PATH_BACKFILLS}/{backfillID}",
                 (string response, UnityWebRequest request) =>
                 {
                     onSuccessDelegate(request);

@@ -40,8 +40,8 @@ namespace Edgegap.Gen2SDK
         public bool LogAssignmentUpdates;
         public bool LogPollingUpdates;
 
-        public Observable<TicketResponseDTO> Assignment { get; private set; } =
-            new Observable<TicketResponseDTO> { };
+        public Observable<TicketsResponseDTO> Assignment { get; private set; } =
+            new Observable<TicketsResponseDTO> { };
         public Observable<MonitorResponseDTO> Monitor { get; private set; } =
             new Observable<MonitorResponseDTO> { };
         public Observable<T> Ticket { get; private set; } = new Observable<T> { };
@@ -170,7 +170,7 @@ namespace Edgegap.Gen2SDK
             {
                 Gen2Api.CreateTicketAsync(
                     ticket,
-                    (TicketResponseDTO assignment, UnityWebRequest request) =>
+                    (TicketsResponseDTO assignment, UnityWebRequest request) =>
                     {
                         Ticket._Update(ticket, "saved");
                         Assignment._Update(assignment, "received");
@@ -189,7 +189,7 @@ namespace Edgegap.Gen2SDK
         public void StartGroupMatchmaking(
             T hostTicket,
             List<T> memberTickets,
-            Action<List<TicketResponseDTO>, UnityWebRequest> onSuccessDelegate,
+            Action<List<TicketsResponseDTO>, UnityWebRequest> onSuccessDelegate,
             bool abandon = false
         )
         {
@@ -223,7 +223,7 @@ namespace Edgegap.Gen2SDK
             });
         }
 
-        public void JoinGroupMatchmaking(TicketResponseDTO assignment, bool abandon = false)
+        public void JoinGroupMatchmaking(TicketsResponseDTO assignment, bool abandon = false)
         {
             if (Assignment.Current is not null && !abandon)
             {
@@ -263,7 +263,7 @@ namespace Edgegap.Gen2SDK
                 string
             > onMonitorUpdate,
             UnityAction<
-                Observable<TicketResponseDTO>,
+                Observable<TicketsResponseDTO>,
                 ObservableActionType,
                 string
             > onAssignmentUpdate,
@@ -362,7 +362,7 @@ namespace Edgegap.Gen2SDK
                 if (assignment.Length > 0)
                 {
                     Assignment._Update(
-                        JsonConvert.DeserializeObject<TicketResponseDTO>(assignment),
+                        JsonConvert.DeserializeObject<TicketsResponseDTO>(assignment),
                         "loaded from PlayerPrefs"
                     );
                 }
@@ -465,7 +465,7 @@ namespace Edgegap.Gen2SDK
 
             Gen2Api.GetTicketAsync(
                 Assignment.Current.ID,
-                (TicketResponseDTO assignment, UnityWebRequest request) =>
+                (TicketsResponseDTO assignment, UnityWebRequest request) =>
                 {
                     if (
                         Assignment.Current is not null
