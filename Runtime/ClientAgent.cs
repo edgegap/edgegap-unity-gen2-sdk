@@ -13,7 +13,7 @@ namespace Edgegap.Gen2SDK
 {
     using L = Logger;
 
-    public class Client<T, A>
+    public class ClientAgent<T, A>
         where T : TicketsRequestDTO<A>
     {
         private Api<T, A> Gen2Api;
@@ -24,7 +24,7 @@ namespace Edgegap.Gen2SDK
         public string BaseUrl { get; }
         public string AuthToken { private get; set; }
 
-        public string ClientVersion;
+        public string AgentVersion;
         public bool SaveStateInPlayerPrefs;
         internal string PLAYER_PREFS_KEY_VERSION;
         internal string PLAYER_PREFS_KEY_TICKET;
@@ -47,13 +47,13 @@ namespace Edgegap.Gen2SDK
         public Observable<T> Ticket { get; private set; } = new Observable<T> { };
         private protected bool Polling = false;
 
-        public Client(
+        public ClientAgent(
             MonoBehaviour handler,
             string baseUrl,
             string authToken,
-            string clientVersion = "1.0.0",
+            string agentVersion = "1.0.0",
             bool saveStateInPlayerPrefs = true,
-            string pLAYER_PREFS_KEY_VERSION = "EdgegapGen2ClientVersion",
+            string pLAYER_PREFS_KEY_VERSION = "EdgegapGen2AgentVersion",
             string pLAYER_PREFS_KEY_TICKET = "EdgegapGen2ClientTicket",
             string pLAYER_PREFS_KEY_ASSIGNMENT = "EdgegapGen2ClientAssignment",
             int requestTimeoutSeconds = 3,
@@ -73,7 +73,7 @@ namespace Edgegap.Gen2SDK
             Handler = handler;
             BaseUrl = baseUrl;
             AuthToken = authToken;
-            ClientVersion = clientVersion;
+            AgentVersion = agentVersion;
             SaveStateInPlayerPrefs = saveStateInPlayerPrefs;
             PLAYER_PREFS_KEY_VERSION = pLAYER_PREFS_KEY_VERSION;
             PLAYER_PREFS_KEY_TICKET = pLAYER_PREFS_KEY_TICKET;
@@ -323,7 +323,7 @@ namespace Edgegap.Gen2SDK
 
         internal void _LoadStateFromPlayerPrefs()
         {
-            string version = ClientVersion;
+            string version = AgentVersion;
             try
             {
                 version = PlayerPrefs.GetString(PLAYER_PREFS_KEY_VERSION);
@@ -335,8 +335,8 @@ namespace Edgegap.Gen2SDK
 
             // skip reading ticket and assignment if version increased
             if (
-                string.IsNullOrEmpty(ClientVersion)
-                || (!string.IsNullOrEmpty(version) && version.CompareTo(ClientVersion) > 0)
+                string.IsNullOrEmpty(AgentVersion)
+                || (!string.IsNullOrEmpty(version) && version.CompareTo(AgentVersion) > 0)
             )
                 return;
 

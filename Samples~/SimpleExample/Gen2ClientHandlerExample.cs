@@ -15,9 +15,9 @@ public class Gen2ClientHandlerExample : MonoBehaviour
     public string BaseUrl;
     public string AuthToken;
 
-    public string ClientVersion = "1.0.0";
+    public string AgentVersion = "1.0.0";
     public bool SaveStateInPlayerPrefs = true;
-    public string PLAYER_PREFS_KEY_VERSION = "EdgegapGen2ClientVersion";
+    public string PLAYER_PREFS_KEY_VERSION = "EdgegapGen2AgentVersion";
     public string PLAYER_PREFS_KEY_TICKET = "EdgegapGen2ClientTicket";
     public string PLAYER_PREFS_KEY_ASSIGNMENT = "EdgegapGen2ClientAssignment";
 
@@ -34,10 +34,7 @@ public class Gen2ClientHandlerExample : MonoBehaviour
     public bool LogPollingUpdates = false;
     #endregion
 
-    // todo replace with CustomTicketsRequestDTO
-    public Client<MyTicketsRequestDTO, MyTicketsAttributes> Gen2Client;
-
-    private string State;
+    public ClientAgent<MyTicketsRequestDTO, MyTicketsAttributes> Gen2Client;
 
     public void Awake()
     {
@@ -56,11 +53,11 @@ public class Gen2ClientHandlerExample : MonoBehaviour
     public void Start()
     {
         // configure Gen2
-        Gen2Client = new Client<MyTicketsRequestDTO, MyTicketsAttributes>(
+        Gen2Client = new ClientAgent<MyTicketsRequestDTO, MyTicketsAttributes>(
             this,
             BaseUrl,
             AuthToken,
-            ClientVersion,
+            AgentVersion,
             SaveStateInPlayerPrefs,
             PLAYER_PREFS_KEY_VERSION,
             PLAYER_PREFS_KEY_TICKET,
@@ -85,7 +82,7 @@ public class Gen2ClientHandlerExample : MonoBehaviour
             {
                 if (action == ObservableActionType.Update)
                 {
-                    if (State is null && message == "healthy")
+                    if (message == "healthy")
                     {
                         // todo update UI
                         Gen2Client.ResumeMatchmaking();
@@ -100,7 +97,7 @@ public class Gen2ClientHandlerExample : MonoBehaviour
             },
             // handle ticket assignment
             (
-                Observable<TicketResponseDTO> assignment,
+                Observable<TicketsResponseDTO> assignment,
                 ObservableActionType action,
                 string message
             ) =>
@@ -187,7 +184,7 @@ public class Gen2ClientHandlerExample : MonoBehaviour
         Gen2Client.StartGroupMatchmaking(
             hostTicket,
             memberTickets,
-            (List<TicketResponseDTO> memberAssignments, UnityWebRequest request) =>
+            (List<TicketsResponseDTO> memberAssignments, UnityWebRequest request) =>
             {
                 // todo send assignment IDs to group members to track their tickets
                 Debug.Log($"member assignemnts: {memberAssignments}");
