@@ -2,23 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Edgegap.Gen2SDK
 {
     using EnvTicketsRequestDTO = AdvancedTicketsRequestDTO;
     using L = Logger;
 
-    public class EnvHelper
+    public class EnvHelper : MonoBehaviour
     {
-        private List<string> _ticketIds;
-        private Dictionary<string, EnvTicketsRequestDTO> _ticketData =
+        public List<string> TicketIds;
+        public Dictionary<string, EnvTicketsRequestDTO> TicketsData =
             new Dictionary<string, EnvTicketsRequestDTO>();
-        private string _matchId;
-        private string _matchProfile;
-        private EnvEqualityDTO _equality;
-        private EnvIntersectionDTO _intersection;
+        public string MatchId;
+        public string MatchProfile;
+        public EnvEqualityDTO Equality;
+        public EnvIntersectionDTO Intersection;
 
-        public void StoreEnvs()
+        public void Awake()
         {
             IDictionary envs = Environment.GetEnvironmentVariables();
 
@@ -28,40 +29,50 @@ namespace Edgegap.Gen2SDK
 
                 if (key.Contains("MM_"))
                 {
-                    if (key.Contains("_TICKET_") && !key.Contains("_IDS"))
+                    try
                     {
-                        string id = key.Split("MM_TICKET_", StringSplitOptions.RemoveEmptyEntries)[
-                            0
-                        ];
-                        _ticketData[id] = JsonConvert.DeserializeObject<EnvTicketsRequestDTO>(
-                            envEntry.Value.ToString()
-                        );
+                        if (key.Contains("_TICKET_") && !key.Contains("_IDS"))
+                        {
+                            string id = key.Split(
+                                "MM_TICKET_",
+                                StringSplitOptions.RemoveEmptyEntries
+                            )[0];
+
+                            TicketsData[id] = JsonConvert.DeserializeObject<EnvTicketsRequestDTO>(
+                                envEntry.Value.ToString()
+                            );
+                        }
+                        else if (key.Contains("_TICKET_"))
+                        {
+                            TicketIds = JsonConvert.DeserializeObject<List<string>>(
+                                envEntry.Value.ToString()
+                            );
+                        }
+                        else if (key.Contains("_MATCH_PROFILE"))
+                        {
+                            MatchProfile = envEntry.Value.ToString();
+                        }
+                        else if (key.Contains("_MATCH_ID"))
+                        {
+                            MatchId = envEntry.Value.ToString();
+                        }
+                        else if (key.Contains("_EQUALITY"))
+                        {
+                            Equality = JsonConvert.DeserializeObject<EnvEqualityDTO>(
+                                envEntry.Value.ToString()
+                            );
+                        }
+                        else if (key.Contains("_INTERSECTION"))
+                        {
+                            Intersection = JsonConvert.DeserializeObject<EnvIntersectionDTO>(
+                                envEntry.Value.ToString()
+                            );
+                        }
                     }
-                    else if (key.Contains("_TICKET_"))
+                    catch (Exception e)
                     {
-                        _ticketIds = JsonConvert.DeserializeObject<List<string>>(
-                            envEntry.Value.ToString()
-                        );
-                    }
-                    else if (key.Contains("_MATCH_PROFILE"))
-                    {
-                        _matchProfile = envEntry.Value.ToString();
-                    }
-                    else if (key.Contains("_MATCH_ID"))
-                    {
-                        _matchId = envEntry.Value.ToString();
-                    }
-                    else if (key.Contains("_EQUALITY"))
-                    {
-                        _equality = JsonConvert.DeserializeObject<EnvEqualityDTO>(
-                            envEntry.Value.ToString()
-                        );
-                    }
-                    else if (key.Contains("_INTERSECTION"))
-                    {
-                        _intersection = JsonConvert.DeserializeObject<EnvIntersectionDTO>(
-                            envEntry.Value.ToString()
-                        );
+                        L._Error($"Couldn't parse env, consider updating Gen2 SDK. {e.Message}");
+                        throw;
                     }
                 }
             }
