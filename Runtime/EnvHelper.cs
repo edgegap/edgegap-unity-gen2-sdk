@@ -33,17 +33,17 @@ namespace Edgegap.Gen2SDK
 
         public void Start()
         {
-            IDictionary envs = Environment.GetEnvironmentVariables();
-            MatchProfile = envs["MM_MATCH_PROFILE"].ToString();
-            TicketsData = new Dictionary<string, EnvCustomTicketsRequestDTO>();
-
-            foreach (DictionaryEntry envEntry in envs)
+            try
             {
-                string key = envEntry.Key.ToString();
+                IDictionary envs = Environment.GetEnvironmentVariables();
+                MatchProfile = envs["MM_MATCH_PROFILE"].ToString();
+                TicketsData = new Dictionary<string, EnvCustomTicketsRequestDTO>();
 
-                if (key.Contains("MM_"))
+                foreach (DictionaryEntry envEntry in envs)
                 {
-                    try
+                    string key = envEntry.Key.ToString();
+
+                    if (key.Contains("MM_"))
                     {
                         if (key.Contains("_TICKET_") && !key.Contains("_IDS"))
                         {
@@ -80,12 +80,30 @@ namespace Edgegap.Gen2SDK
                             );
                         }
                     }
-                    catch (Exception e)
+                }
+
+                foreach (string id in TicketIds)
+                {
+                    bool match = false;
+
+                    foreach (string dataKey in TicketsData.Keys)
                     {
-                        L._Error($"Couldn't parse env, consider updating Gen2 SDK. {e.Message}");
-                        throw;
+                        if (dataKey.Contains(id))
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+
+                    if (!match)
+                    {
+                        L._Warn($"Couldn't find injected ticket body for injected ticket ID {id}.");
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                L._Error($"Couldn't parse envs, consider updating Gen2 SDK. {e.Message}");
             }
         }
     }
