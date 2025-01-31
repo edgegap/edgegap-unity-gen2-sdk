@@ -48,7 +48,7 @@ This is the only official distribution channel for this SDK, do not trust unveri
 
 ## Plugin Usage
 
-Follow our [Getting Started guide](/404) first, then explore our [Matchmaking Scenarios](/404) for inspiration.
+[Follow our Getting Started guide first, then explore our Matchmaking Scenarios for inspiration.](https://docs.edgegap.com/learn/matchmaking/getting-started-with-gen2)
 
 ### Import Simple Example
 
