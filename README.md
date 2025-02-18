@@ -48,7 +48,7 @@ This is the only official distribution channel for this SDK, do not trust unveri
 
 ## Plugin Usage
 
-Follow our [Getting Started guide](/404) first, then explore our [Matchmaking Scenarios](/404) for inspiration.
+[Follow our Getting Started guide first, then explore our Matchmaking Scenarios for inspiration.](https://docs.edgegap.com/learn/matchmaking/getting-started-with-gen2)
 
 ### Import Simple Example
 
@@ -65,7 +65,17 @@ To take full advantage of our Unity Gen2 service, you will need to [Create an Ed
 
 ### Troubleshooting
 
+> Unity Editor shows `[Package Manager Window] Error adding package: https://github.com/edgegap/edgegap-unity-gen2-sdk.git`
+
+- If you’re adding our plugin via git URL, you will need to have a git client installed.
+
+> Unity Editor 2021 shows `failed to resolve assembly: 'Edgegap.Gen2.SDK...`
+
+- This is a known issue when using plugin with [Unity's Burst compiler](https://docs.unity3d.com/6000.0/Documentation/Manual/com.unity.burst.html).
+- Install plugin [via ZIP archive](#install-via-zip-archive) and delete `EdgegapGen2SDK.asmdef` in the plugin folder to resolve this.
+
 > Visual Studio shows `type or namespace name could not be found` for Edgegap namespace.
+
 1. In your Unity Editor, navigate to **Edit / Preferences / External Tools / Generate .csproj files**.
 2. Make sure you have enabled **Git packages**.
 3. Click **Regenerate project files**.
