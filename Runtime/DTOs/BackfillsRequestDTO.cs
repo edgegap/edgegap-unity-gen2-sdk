@@ -8,7 +8,7 @@ namespace Edgegap.Gen2SDK
         public string Profile;
 
         [JsonProperty("attributes")]
-        public string Attributes;
+        public BackfillsAttributesDTO Attributes;
 
         [JsonProperty("player_tickets")]
         public TicketsRequestDTO<A>[] Tickets;
@@ -24,9 +24,9 @@ namespace Edgegap.Gen2SDK
         }
     }
 
-    public class BackfillsAttributesDTO
+    public class BackfillsAttributesDTO : AssignmentDTO
     {
-        [JsonProperty("deployment_request_id")]
+        [JsonProperty("request_id")]
         public string DeploymentID;
 
         public override string ToString()

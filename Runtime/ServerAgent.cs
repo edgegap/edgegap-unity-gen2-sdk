@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -28,12 +27,11 @@ namespace Edgegap.Gen2SDK
         public float PollingBackoffSeconds;
         public int MaxConsecutivePollingErrors;
 
-        public float RemoveAssignmentSeconds;
+        public float RemoveTicketSeconds;
         public bool DeleteBackfillsOnQuit;
 
         public bool LogBackfillUpdates;
         public bool LogAssignmentUpdates;
-        public bool LogPollingUpdates;
         #endregion
 
         #region ServerAgent State
@@ -62,11 +60,10 @@ namespace Edgegap.Gen2SDK
             int requestTimeoutSeconds = 3,
             float pollingBackoffSeconds = 1f,
             int maxConsecutivePollingErrors = 10,
-            float removeAssignmentSeconds = 30f,
+            float removeTicketSeconds = 30f,
             bool deleteBackfillsOnQuit = true,
             bool logBackfillUpdates = true,
-            bool logAssignmentUpdates = true,
-            bool logPollingUpdates = false
+            bool logAssignmentUpdates = true
         )
         {
             if (handler is null)
@@ -82,11 +79,10 @@ namespace Edgegap.Gen2SDK
             RequestTimeoutSeconds = requestTimeoutSeconds;
             PollingBackoffSeconds = pollingBackoffSeconds;
             MaxConsecutivePollingErrors = maxConsecutivePollingErrors;
-            RemoveAssignmentSeconds = removeAssignmentSeconds;
+            RemoveTicketSeconds = removeTicketSeconds;
             DeleteBackfillsOnQuit = deleteBackfillsOnQuit;
             LogBackfillUpdates = logBackfillUpdates;
             LogAssignmentUpdates = logAssignmentUpdates;
-            LogPollingUpdates = logPollingUpdates;
         }
 
         #region Server API
@@ -112,14 +108,20 @@ namespace Edgegap.Gen2SDK
             );
         }
 
+        public void VerifyTicket(string ticketId)
+        {
+            // @todo get backfill
+        }
+
+        public void RemoveTicket(bool replaceWithBackfill = true)
+        {
+            // @todo check if the ticket was verified
+            // @todo remove ticket and create backfill
+        }
+
         public void AddBackfill()
         {
             // @todo create backfill
-        }
-
-        public void VerifyBackfill()
-        {
-            // @todo get backfill
         }
 
         public void RemoveBackfill()
@@ -171,7 +173,7 @@ namespace Edgegap.Gen2SDK
                 (MonitorResponseDTO monitor, UnityWebRequest request) =>
                 {
                     _SubscribeLogger(Monitor, "Monitor");
-                    _SubscribeLogger(Backfill, "Ticket", LogBackfillUpdates);
+                    _SubscribeLogger(Backfill, "Backfill", LogBackfillUpdates);
                     _SubscribeLogger(Assignment, "Assignment", LogAssignmentUpdates);
 
                     if (onBackfillUpdate is not null)
